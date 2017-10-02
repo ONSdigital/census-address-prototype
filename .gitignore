@@ -1,0 +1,8 @@
+Prepros Export
+node_modules
+.sass-cache
+node_modules
+*.log
+yarn.lock
+.DS_Store
+*.config
