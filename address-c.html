@@ -36,7 +36,7 @@
     <style>
 
     #autocomplete {
-        width:350px;
+        max-width:350px;
     }
     .hidden-address {
       display: none;
@@ -195,7 +195,7 @@
 
 <div class="question question--repeatinganswer" id="household-relationships-question">
 
-  <h1 class="question__title jupiter">
+  <h1 class="question__title saturn">
 
     What is your address?
   </h1>
@@ -217,7 +217,7 @@
 
 
         <label  for="household-relationships-answer-0" class="label venus">
-          Postcode
+          Enter your postcode
         </label>
 
 
@@ -228,8 +228,8 @@
 
 
         <div id="locationField">
-          <input class="input input--text" id="autocomplete" placeholder="Enter your postcode"
-                 onFocus="geolocate()" type="text"></input>
+          <input class="input input--text" id="autocomplete" placeholder=""
+                  type="text"></input>
         </div><br /></br />
 
         <div id="address" class="hidden-address">
@@ -239,10 +239,10 @@
           <label class="label venus">Street address</label>
           <input class="input input--text" id="route" disabled="true"></input></br />
 
-          <label class="label venus">City</label>
+          <label class="label venus">City or town</label>
           <input class="input input--text" id="postal_town" disabled="true"></input></br />
 
-          <label class="label venus">County</label>
+          <label class="label venus">County (Optional)</label>
           <input class="input input--text" id="administrative_area_level_1" disabled="true"></input></br />
 
           <label class="label venus">Post code</label>
@@ -417,12 +417,16 @@
 
 
 <script>
-    document.querySelector(".btn--primary").addEventListener("click", function(event) {
-      event.preventDefault();
-      var parameterString = document.getElementById("autocomplete").value;
-      window.location.href = "../address-C-page-2.html?" + parameterString; // target of save and continue
-    }, false);
-    </script>
+document.querySelector(".btn--primary").addEventListener(
+  "click",
+  function(event) {
+    event.preventDefault();
+    var parameterString = document.getElementById("autocomplete").value;
+    window.location.href = "../address-C-page-2.html?" + parameterString; // target of save and continue
+  },
+  false
+);
+</script>
 
 
 

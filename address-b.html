@@ -146,7 +146,7 @@
 
 <div class="question question--repeatinganswer" id="household-relationships-question">
 
-  <h1 class="question__title jupiter">
+  <h1 class="question__title saturn">
 
     What is your address?
   </h1>
@@ -176,10 +176,10 @@
           <label class="label venus">Street address</label>
           <input class="input input--text" id="route" ></input></br />
 
-          <label class="label venus">City</label>
+          <label class="label venus">City or town</label>
           <input class="input input--text" id="postal_town" ></input></br />
 
-          <label class="label venus">County</label>
+          <label class="label venus">County (Optional)</label>
           <input class="input input--text" id="administrative_area_level_1" ></input></br />
 
           <label class="label venus">Post code</label>
@@ -354,10 +354,14 @@
 
 
 <script>
-document.querySelector(".btn--primary").addEventListener("click", function(event) {
-  event.preventDefault();
-  window.location.href = "../thankyou.html"; // target of save and continue
-}, false);
+document.querySelector(".btn--primary").addEventListener(
+  "click",
+  function(event) {
+    event.preventDefault();
+    window.location.href = "../thankyou.html"; // target of save and continue
+  },
+  false
+);
 </script>
 
   	  <!--<![endif]-->    <!--[if gte IE 9]><!-->

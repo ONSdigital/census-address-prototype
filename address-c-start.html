@@ -36,14 +36,51 @@
     <style>
 
     #autocomplete {
+        max-width:350px;
+    }
+    .hidden-address {
       display: none;
     }
 
-    #address {
-      display: none;
-    }
     .pac-container {
-      display: block !important;
+      background-color: #fff;
+      border: 2px solid #4263c2;
+      border-top: 0;
+      color: #34384b;
+      margin: 0;
+      max-height: 342px;
+      overflow-x: hidden;
+      padding: 0;
+    }
+
+    .pac-logo:after { content: none !important; }
+
+    .pac-item {
+      border-bottom: 1px solid #4263c2;
+      border-top: none;
+      padding: 10.8px;
+      cursor: pointer;
+      font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .pac-item:hover,
+    .pac-item:hover .pac-item-query {
+      background-color: #4263c2;
+      color: white;
+    }
+
+
+    .pac-item,
+    .pac-item-query {
+      font-size: 17px;
+    }
+
+    .pac-item-query:after {
+      content: ',';
+    }
+
+    .pac-icon {
+      display: none;
     }
     </style>
   </head>
@@ -119,152 +156,32 @@
 
 
 
+      <div id="get-started" class="u-mb-s">
 
-
-
-    <form class="form qa-questionnaire-form" role="form" method="POST" autocomplete="off" novalidate>
-      <input id="csrf_token" name="csrf_token" type="hidden" value="ImUyNGQ4ZTliMTQxZDY4MGI3NzgyYjkyMjI4M2Y3ZWRmMGJlZmZjZWYi.DKKFlA.U3YKd3C5S0R9193pylUknvdyOTc">
-
-
-        <div class="group" id="who-lives-here-relationship">
-
-
-<block class="block" id="household-relationships">
-
-
-      <p class="block__title neptune" data-qa="block-title"></p>
+          <h2 class="saturn">Get started</h2>
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="question question--repeatinganswer" id="household-relationships-question">
-
-  <h1 class="question__title saturn">
-
-    What is your address?
-
-  </h1>
-
-
-
-
-
-  <fieldset>
-    <div class="question__answers">
-
-
-
-
-<div class="question__answer">
-  <div class="answer">
-    <div class="answer__fields">
-      <div class="field field--select">
-
-
-        <label  for="household-relationships-answer-0" class="label venus">
-          Postcode
-        </label>
-        <span class="postcode venus"></span> <a href="address-C.html">Change</a></br></br>
-
-        <label  for="household-relationships-answer-0" class="label venus">
-          Select address
-        </label>
-
-
-
-
-
-
-        <select id="select-address" class="input input--select select-address">
-          <option>50 address found</option>
-        </select>
-
-        <div id="locationField">
-          <input class="input input--text" id="autocomplete" placeholder="Enter your address"
-                  type="text"></input>
-        </div><br /></br />
-
-
-
-        <div id="address" class="hidden-address">
-          <label class="label venus">House name or number</label>
-          <input class="input input--text" id="street_number" disabled="true"></input></br />
-
-          <label class="label venus">Street address</label>
-          <input class="input input--text" id="route" disabled="true"></input></br />
-
-          <label class="label venus">City or town</label>
-          <input class="input input--text" id="postal_town" disabled="true"></input></br />
-
-          <label class="label venus">County (Optional)</label>
-          <input class="input input--text" id="administrative_area_level_1" disabled="true"></input></br />
-
-          <label class="label venus">Post code</label>
-          <input class="input input--text" id="postal_code" disabled="true"></input></br />
-
-          <label class="label venus">Country</label>
-          <input class="input input--text" id="country" disabled="true"></input></br />
-        </div>
 
 
 
 
       </div>
-    </div>
-  </div>
-</div>
 
-
-
-</div>
-  </fieldset>
-</div>
-
-
-
-
-
-</block>
+      <div class="lock u-mt-l u-mb-s u-mb-m@s">
+          <div class="venus lock__text">All information you provide is strictly confidential</div>
         </div>
 
-
-
-      <button class="btn btn--primary btn--lg" data-qa="btn-submit" type="submit" name="action[save_continue]">Save and continue</button>
-
-
-      <div class="u-mb-m">
-        <button class="btn btn--link mars js-btn-save" type="submit" name="action[save_sign_out]"
-   data-ga="click" data-ga-category="Navigation" data-ga-action="Save and complete later click">Save and complete later</button>
-      </div>
-    </form>
+        <form class="form" method="POST" autocomplete="off" novalidate="">
+    <input id="csrf_token" name="csrf_token" type="hidden" value="Ijc3ODQ0ZGI4Y2EzZGIxNzRiYjNjNDQ2ZDg2NGYzMWZlYzg4NThmYTQi.DLUXtQ.HFJBY26cm48X3ztYl6EVFvxl0Lk">
+    <button class="btn btn--primary btn--lg qa-btn-get-started" type="submit" name="action[start_questionnaire]">Start survey</button>
+  </form>
 
 
 
 
 
-  <a class="page__previous page__previous--bottom"
-
-   data-ga="click" data-ga-label="bottom" data-ga-category="Navigation" data-ga-action="Previous link click"
-  href="/questionnaire/census/household/ewv5eFkd/who-lives-here/0/overnight-visitors" id="bottom-previous">Previous</a>
 
 
     </main>
@@ -388,94 +305,22 @@
 </div>
 
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 <script>
-var paramsString = window.location.search.substring(1);
-$(".postcode").text(paramsString);
 document.querySelector(".btn--primary").addEventListener(
   "click",
   function(event) {
     event.preventDefault();
-    window.location.href = "../thankyou.html"; // target of save and continue
+    window.location.href = "../address-c.html"; // target of save and continue
   },
   false
 );
-// This example displays an address form, using the autocomplete feature
-// of the Google Places API to help users fill in the information.
-
-// This example requires the Places library. Include the libraries=places
-// parameter when you first load the API. For example:
-// <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
-
-var placeSearch, autocomplete;
-var componentForm = {
-  street_number: "short_name",
-  route: "long_name",
-  postal_town: "long_name",
-  administrative_area_level_1: "short_name",
-  country: "long_name",
-  postal_code: "short_name"
-};
-
-function initAutocomplete() {
-  // Create the autocomplete object, restricting the search to geographical
-  // location types.
-  autocomplete = new google.maps.places
-    .Autocomplete(
-    /** @type {!HTMLInputElement} */ (document.getElementById("autocomplete")),
-    { types: ["geocode"] }
-  );
-
-  // When the user selects an address from the dropdown, populate the address
-  // fields in the form.
-  autocomplete.addListener("place_changed", fillInAddress);
-}
-
-function fillInAddress() {
-  // Get the place details from the autocomplete object.
-  var place = autocomplete.getPlace();
-
-  for (var component in componentForm) {
-    document.getElementById(component).value = "";
-    document.getElementById(component).disabled = false;
-  }
-
-  // Get each component of the address from the place details
-  // and fill the corresponding field on the form.
-  for (var i = 0; i < place.address_components.length; i++) {
-    var addressType = place.address_components[i].types[0];
-    if (componentForm[addressType]) {
-      var val = place.address_components[i][componentForm[addressType]];
-      document.getElementById(addressType).value = val;
-    }
-  }
-}
-
-document.querySelector("#autocomplete").value = decodeURIComponent(
-  paramsString
-);
 </script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMLQamD0AiEJavr9U0FvElw7s25rjyZEM&libraries=places&callback=initAutocomplete" async defer></script>
-
-
 
   	  <!--<![endif]-->    <!--[if gte IE 9]><!-->
 
             <script src="/s/js/bundle.min.js?q=c9b1d9ca24f114e6b67a88390664a082d7bd52b6"></script>
 
         	  <!--<![endif]-->
-            <script>
-            function cloneItem() {
-  $(".pac-container .pac-item").each(function() {
-    for (var i = 0; i <= 50; i++) {
-      $(this)
-        .replaceWith("<option> " + i + " " + $(this).html() + " </option>")
-        .appendTo("select.select-address");
-    }
-  });
-}
-setTimeout(cloneItem, 500);
-</script>
     </body>
 </html>

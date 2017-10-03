@@ -36,7 +36,7 @@
     <style>
 
     #autocomplete {
-        width:350px;
+        max-width:350px;
     }
     .hidden-address {
       display: none;
@@ -195,7 +195,7 @@
 
 <div class="question question--repeatinganswer" id="household-relationships-question">
 
-  <h1 class="question__title jupiter">
+  <h1 class="question__title saturn">
 
     What is your address?
   </h1>
@@ -217,7 +217,7 @@
 
 
         <label  for="household-relationships-answer-0" class="label venus">
-          Type your address or postcode
+          Enter your address or postcode
         </label>
 
 
@@ -228,36 +228,47 @@
 
 
         <div id="locationField">
-          <input class="input input--text" id="autocomplete" placeholder="Enter your address"
-                 onFocus="geolocate()" type="text"></input>
-        </div><br /></br />
-
-        <div id="address" class="hidden-address">
-          <p class="saturn">Your Address</p>
-          <label class="label venus">House name or number</label>
-          <input class="input input--text" id="street_number" disabled="true"></input></br />
-
-          <label class="label venus">Street address</label>
-          <input class="input input--text" id="route" disabled="true"></input></br />
-
-          <label class="label venus">City</label>
-          <input class="input input--text" id="postal_town" disabled="true"></input></br />
-
-          <label class="label venus">County</label>
-          <input class="input input--text" id="administrative_area_level_1" disabled="true"></input></br />
-
-          <label class="label venus">Post code</label>
-          <input class="input input--text" id="postal_code" disabled="true"></input></br />
-
-          <label class="label venus">Country</label>
-          <input class="input input--text" id="country" disabled="true"></input></br />
+          <input class="input input--text" id="autocomplete" placeholder=" "
+                  type="text"></input>
         </div>
+        <div id="guidance" class="guidance js-details" data-hide-label="Hide enter your address manually" data-show-label="Enter your address manually">
+  <a class="guidance__link js-details-trigger js-details-label mars" aria-controls="guidance-permanent-or-family-home-answer-body" data-guidance-trigger="true" id="guidance-permanent-or-family-home-answer-trigger" aria-expanded="false" href="#guidance-permanent-or-family-home-answer" data-ga-label="permanent-or-family-home-answer" data-ga-category="Help" data-ga="click" data-ga-action="Guidance click">Enter your address manually</a>
+  <div class="guidance__main js-details-body" aria-hidden="true" id="guidance-permanent-or-family-home-answer-body">
+    <div class="guidance__content mars">
+
+
+      <div id="address" >
+        <p class="neptune">Your Address</p>
+        <label class="label venus">House name or number</label>
+        <input class="input input--text" id="street_number" disabled="true"></input></br />
+
+        <label class="label venus">Street address</label>
+        <input class="input input--text" id="route" disabled="true"></input></br />
+
+        <label class="label venus">City or town</label>
+        <input class="input input--text" id="postal_town" disabled="true"></input></br />
+
+        <label class="label venus">County (Optional)</label>
+        <input class="input input--text" id="administrative_area_level_1" disabled="true"></input></br />
+
+        <label class="label venus">Post code</label>
+        <input class="input input--text" id="postal_code" disabled="true"></input></br />
+
+        <label class="label venus">Country</label>
+        <input class="input input--text" id="country" disabled="true"></input></br />
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 
 
 
       </div>
     </div>
+
   </div>
 </div>
 
@@ -418,84 +429,79 @@
 
 
 <script>
-    document.querySelector(".btn--primary").addEventListener("click", function(event) {
-      event.preventDefault();
-      window.location.href = "../thankyou.html"; // target of save and continue
-    }, false);
-      // This example displays an address form, using the autocomplete feature
-      // of the Google Places API to help users fill in the information.
+document.querySelector(".btn--primary").addEventListener(
+  "click",
+  function(event) {
+    event.preventDefault();
+    window.location.href = "../thankyou.html"; // target of save and continue
+  },
+  false
+);
+// This example displays an address form, using the autocomplete feature
+// of the Google Places API to help users fill in the information.
 
-      // This example requires the Places library. Include the libraries=places
-      // parameter when you first load the API. For example:
-      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+// This example requires the Places library. Include the libraries=places
+// parameter when you first load the API. For example:
+// <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 
-      var placeSearch, autocomplete;
-      var componentForm = {
-        street_number: 'short_name',
-        route: 'long_name',
-        administrative_area_level_1: 'short_name',
-        postal_town: 'long_name',
-        country: 'long_name',
-        postal_code: 'short_name'
-      };
+var placeSearch, autocomplete;
+var componentForm = {
+  street_number: "short_name",
+  route: "long_name",
+  administrative_area_level_1: "short_name",
+  postal_town: "long_name",
+  country: "long_name",
+  postal_code: "short_name"
+};
 
-      function initAutocomplete() {
-        // Create the autocomplete object, restricting the search to geographical
-        // location types.
-        autocomplete = new google.maps.places.Autocomplete(
-            /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
-            {types: ['geocode']});
+function initAutocomplete() {
+  // Create the autocomplete object, restricting the search to geographical
+  // location types.
+  autocomplete = new google.maps.places
+    .Autocomplete(
+    /** @type {!HTMLInputElement} */ (document.getElementById("autocomplete")),
+    { types: ["geocode"] }
+  );
 
-        // When the user selects an address from the dropdown, populate the address
-        // fields in the form.
-        autocomplete.addListener('place_changed', fillInAddress);
-      }
+  // When the user selects an address from the dropdown, populate the address
+  // fields in the form.
+  autocomplete.addListener("place_changed", fillInAddress);
+}
 
-      function fillInAddress() {
-        // Get the place details from the autocomplete object.
-        var place = autocomplete.getPlace();
+function fillInAddress() {
+  // Get the place details from the autocomplete object.
+  var place = autocomplete.getPlace();
 
-        for (var component in componentForm) {
-          document.getElementById(component).value = '';
-          document.getElementById(component).disabled = false;
-        }
+  for (var component in componentForm) {
+    document.getElementById(component).value = "";
+    document.getElementById(component).disabled = false;
+  }
 
-        // Get each component of the address from the place details
-        // and fill the corresponding field on the form.
-        for (var i = 0; i < place.address_components.length; i++) {
-          var addressType = place.address_components[i].types[0];
-          if (componentForm[addressType]) {
-            var val = place.address_components[i][componentForm[addressType]];
-            document.getElementById(addressType).value = val;
-          }
-        }
-        document.getElementById("address").classList.remove("hidden-address");
-      }
+  // Get each component of the address from the place details
+  // and fill the corresponding field on the form.
+  for (var i = 0; i < place.address_components.length; i++) {
+    var addressType = place.address_components[i].types[0];
+    if (componentForm[addressType]) {
+      var val = place.address_components[i][componentForm[addressType]];
+      document.getElementById(addressType).value = val;
+    }
+  }
+  if (document.querySelector(".guidance").classList.contains("is-expanded")) {
+  } else {
+    document.querySelector(".guidance__link").click();
+  }
+}
 
-      // Bias the autocomplete object to the user's geographical location,
-      // as supplied by the browser's 'navigator.geolocation' object.
-      function geolocate() {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function(position) {
-            var geolocation = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            };
-            var circle = new google.maps.Circle({
-              center: geolocation,
-              radius: position.coords.accuracy
-            });
-            autocomplete.setBounds(circle.getBounds());
-          });
-        }
-      }
-      document.querySelector('#autocomplete').addEventListener('keypress', function (e) {
-        var key = e.which || e.keyCode;
-        if (key === 13) { // 13 is enter
-          e.preventDefault();
-        }
-      });
-    </script>
+document
+  .querySelector("#autocomplete")
+  .addEventListener("keypress", function(e) {
+    var key = e.which || e.keyCode;
+    if (key === 13) {
+      // 13 is enter
+      e.preventDefault();
+    }
+  });
+</script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMLQamD0AiEJavr9U0FvElw7s25rjyZEM&libraries=places&callback=initAutocomplete" async defer></script>
 
