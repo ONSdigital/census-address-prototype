@@ -220,7 +220,7 @@
 <div class="question" id="household-relationships-question">
 
   <h1 class="question__title saturn">
-    Enter details of the other UK address where Bob Smill stays more than 30 days a year
+    Enter details of the other UK address where <em>Bob Smill</em> stays more than 30 days a year
   </h1>
 
 
@@ -446,6 +446,7 @@
 
 
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
 document.querySelector(".btn--primary").addEventListener(
   "click",
@@ -508,7 +509,6 @@ function fillInAddress() {
     document.querySelector(".guidance__link").click();
   }
 }
-
 document
   .querySelector("#autocomplete")
   .addEventListener("keypress", function(e) {
@@ -518,6 +518,7 @@ document
       e.preventDefault();
     }
   });
+
 </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMLQamD0AiEJavr9U0FvElw7s25rjyZEM&libraries=places&callback=initAutocomplete" async defer></script>
