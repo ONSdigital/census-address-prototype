@@ -1,0 +1,464 @@
+
+<!doctype html>
+<!--[if lt IE 7]>      <html lang="en-gb" dir="ltr" class="no-js lt-ie10 lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en-gb" dir="ltr" class="no-js lt-ie10 lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en-gb" dir="ltr" class="no-js lt-ie10 lt-ie9"> <![endif]-->
+<!--[if IE 9]>         <html lang="en-gb" dir="ltr" class="no-js lt-ie10"> <![endif]-->
+<!--[if gt IE 9]><!--> <html lang="en-gb" dir="ltr" class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>How is … related to the people below? - 2017 Census Test</title>
+    <meta content="" name="description">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link rel="apple-touch-icon" sizes="180x180" href="/s/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/s/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/s/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/s/favicons/manifest.json">
+    <link rel="mask-icon" href="/s/favicons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+    <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <script>document.documentElement.className = document.documentElement.className.replace('no-js','has-js')</script>
+    <!--<![endif]-->
+
+
+    <!--[if (gt IE 9) | (IEMobile)]><!-->
+    <link href="/s/css/themes/census/responsive.css" rel="stylesheet">
+    <!--<![endif]-->
+    <!--[if (lte IE 9) & (!IEMobile)]>
+    <link href="/s/css/census/fixed.min.css?q=afe0c3fc5f881be5a231a218296436c68cc7fa26" rel="stylesheet">
+    <![endif]-->
+
+    <link href="/s/css/lib/autocomplete.css" rel="stylesheet">
+    <style>
+
+        #autocomplete {
+            max-width:350px;
+        }
+        .hidden-address {
+            display: none;
+        }
+
+        .pac-container {
+            background-color: #fff;
+            border: 2px solid #4263c2;
+            border-top: 0;
+            color: #34384b;
+            margin: 0;
+            max-height: 342px;
+            overflow-x: hidden;
+            padding: 0;
+        }
+
+        .pac-logo:after { content: none !important; }
+
+        .pac-item {
+            border-bottom: 1px solid #4263c2;
+            border-top: none;
+            padding: 10.8px;
+            cursor: pointer;
+            font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .pac-item:hover,
+        .pac-item:hover .pac-item-query {
+            background-color: #4263c2;
+            color: white;
+        }
+
+
+        .pac-item,
+        .pac-item-query {
+            font-size: 17px;
+        }
+
+        .pac-item-query:after {
+            content: ',';
+        }
+
+        .pac-icon {
+            display: none;
+        }
+
+        /**
+         * Reset guidence styles
+         */
+        .guidance.guidance--basic-toggle {
+            margin-left : 0;
+        }
+
+        .guidance--basic-toggle .guidance__link {
+            padding-left : 0;
+        }
+
+        .guidance--basic-toggle .guidance__link::before {
+            width : 0;
+        }
+
+        .guidance--basic-toggle .guidance__main {
+            margin-left : 0;
+        }
+
+        .guidance--basic-toggle .guidance__content {
+            margin-left : 0;
+            padding-left : 0;
+            border-left : none;
+        }
+        /**
+         * End reset guidence styles
+         */
+    </style>
+</head>
+
+<body>
+
+
+
+<div class="page">
+
+    <div class="page__content">
+
+        <div class="skip">
+            <a class="skip__link" href="#main">Skip to content</a>
+        </div>
+
+        <header class="page__header">
+
+            <header class="header header--census">
+                <div class="header__help is-closed js-help-body">
+                    <div class="header__container container">
+                        <div class="header__title ">Help and support &ndash;</div>
+                        <ul class="header__nav nav nav--horizontal">
+                            <li class="nav__item">
+                                <span class="mars" role="presentation">Call </span> <a class="venus nav__link" href="tel:03000683001"><span class="u-vh">For help call </span>0300 068 3001</a>
+                            </li>
+                            <li class="nav__item">
+                                <a class="venus nav__link external" href="http://www.ons.gov.uk/census/help" target="_blank" rel="noopener noreferrer">Online Help</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="header__container container">
+                    <div class="header__logo">
+                        <img src="/s/img/theme/census/census-logo.svg?q=afe0c3fc5f881be5a231a218296436c68cc7fa26" alt="2017 Census" />
+                    </div>
+                    <button class="header__btn btn btn--light btn--border js-help-btn u-hidden"
+
+                            data-ga="click" data-ga-category="Help" data-ga-action="Help and support">
+                        Help and support
+                    </button>
+                </div>
+            </header>
+        </header>
+
+        <div class="page__subheader">
+            <div class="container"></div>
+        </div>
+
+        <div class="page__container container">
+
+            <div class="grid grid--reverse">
+                <div class="grid__col col-4@m"></div>
+
+                <div class="grid__col col-7@m pull-1@m">
+                    <main role="main" id="main" class="page__main">
+
+                        <form class="form qa-questionnaire-form" role="form" method="POST" autocomplete="off" novalidate>
+                            <input id="csrf_token" name="csrf_token" type="hidden" value="ImUyNGQ4ZTliMTQxZDY4MGI3NzgyYjkyMjI4M2Y3ZWRmMGJlZmZjZWYi.DKKFlA.U3YKd3C5S0R9193pylUknvdyOTc">
+
+                            <div class="group" id="who-lives-here-relationship">
+
+                                <block class="block" id="household-relationships">
+
+                                    <p class="block__title neptune" data-qa="block-title"></p>
+
+                                    <div class="question question--repeatinganswer" id="household-relationships-question">
+
+                                        <h1 class="question__title saturn">
+
+                                            What is your address?
+                                        </h1>
+
+                                        <fieldset>
+                                            <div class="question__answers">
+
+                                                <div class="question__answer">
+                                                    <div class="answer">
+                                                        <div class="answer__fields">
+                                                            <div class="field field--select">
+
+
+                                                                <label  for="household-relationships-answer-0" class="label venus">
+                                                                    Enter your address or postcode
+                                                                </label>
+
+                                                                <div id="locationField">
+                                                                    <input class="input input--text" id="autocomplete" placeholder=""type="text" />
+                                                                </div>
+                                                                <div id="guidance" class="guidance guidance--basic-toggle js-details" data-hide-label="Enter your address manually" data-show-label="Enter your address manually">
+                                                                    <a class="guidance__link js-details-trigger js-details-label mars" aria-controls="guidance-permanent-or-family-home-answer-body" data-guidance-trigger="true" id="guidance-permanent-or-family-home-answer-trigger" aria-expanded="false" href="#guidance-permanent-or-family-home-answer" data-ga-label="permanent-or-family-home-answer" data-ga-category="Help" data-ga="click" data-ga-action="Guidance click">Enter your address manually</a>
+                                                                    <div class="guidance__main js-details-body" aria-hidden="true" id="guidance-permanent-or-family-home-answer-body">
+                                                                        <div class="guidance__content mars">
+
+                                                                            <div id="address" >
+                                                                                <p class="neptune">Your Address</p>
+                                                                                <label class="label venus">House name or number</label>
+                                                                                <input class="input input--text" id="street_number" ></input></br />
+
+                                                                                <label class="label venus">Street address</label>
+                                                                                <input class="input input--text" id="route" ></input></br />
+
+                                                                                <label class="label venus">City or town</label>
+                                                                                <input class="input input--text" id="postal_town" ></input></br />
+
+                                                                                <label class="label venus">County (Optional)</label>
+                                                                                <input class="input input--text" id="administrative_area_level_1" ></input></br />
+
+                                                                                <label class="label venus">Post code</label>
+                                                                                <input class="input input--text" id="postal_code" ></input></br />
+
+                                                                                <label class="label venus">Country</label>
+                                                                                <input class="input input--text" id="country" ></input></br />
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </block>
+                            </div>
+
+                            <button class="btn btn--primary btn--lg" data-qa="btn-submit" type="submit" name="action[save_continue]">Save and continue</button>
+
+
+                            <div class="u-mb-m">
+                                <button class="btn btn--link mars js-btn-save" type="submit" name="action[save_sign_out]"
+                                        data-ga="click" data-ga-category="Navigation" data-ga-action="Save and complete later click">Save and complete later</button>
+                            </div>
+                        </form>
+
+
+                        <a class="page__previous page__previous--bottom"
+
+                           data-ga="click" data-ga-label="bottom" data-ga-category="Navigation" data-ga-action="Previous link click"
+                           href="/questionnaire/census/household/ewv5eFkd/who-lives-here/0/overnight-visitors" id="bottom-previous">Previous</a>
+
+                    </main>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <footer class="page__footer">
+
+        <footer class="footer2 page__footer2">
+            <div class="footer2-nav container" role="contentinfo">
+
+                <div class="grid container">
+                    <div class>
+                        <div class="grid__col col-4@m">
+                            <div class="footer2-nav__heading">
+                                <p class="venus"><strong>Legal information</strong></p>
+                            </div>
+                            <ul class="list footer__list">
+                                <li class="footer2-nav__item">
+                                    <a href="/cookies-privacy"
+                                       class="footer2__link" target="_blank">Cookies and privacy</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="grid__col col-4@m">
+                            <div class="footer2-nav__heading">
+                                <p class="venus"><strong>About ONS</strong></p>
+                            </div>
+                            <ul class="list footer__list">
+                                <li class="footer2-nav__item">
+                                    <a href="https://www.ons.gov.uk/aboutus/whatwedo" target="_blank" class="footer2__link">What
+                                        we
+                                        do</a>
+                                </li>
+                                <li class="footer2-nav__item">
+                                    <a href="/contact-us" target="_blank"
+                                       class="footer2__link">Contact us</a>
+                                </li>
+                                <li class="footer2-nav__item">
+                                    <a href="https://www.ons.gov.uk/help/accessibility" target="_blank"
+                                       class="footer2__link">Accessibility</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="grid__col col-4@m">
+                            <div class="footer2-nav__heading">
+                                <p class="venus"><strong>Statistics</strong></p>
+                            </div>
+                            <ul class="list footer__list">
+                                <li class="footer2-nav__item">
+                                    <a href="https://www.statisticsauthority.gov.uk/about-the-authority/" target="_blank"
+                                       class="footer2__link">UK Statistics Authority</a>
+                                </li>
+                                <li class="footer2-nav__item">
+                                    <a href="https://www.ons.gov.uk/releasecalendar" target="_blank" class="footer2__link">Release
+                                        calendar</a>
+                                </li>
+                                <li class="footer2-nav__item">
+                                    <a class="footer2__link" href="https://www.ons.gov.uk/news" target="_blank">News</a>
+                                </li>
+                            </ul>
+                            </br>
+                        </div>
+                        <div class="dl__data mars"><img src="/s/img/ogl.svg?q=afe0c3fc5f881be5a231a218296436c68cc7fa26" class="ogl__img"/>
+                            All content is available under
+                            the <a class="footer2__link"
+                                   href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+                                   target="_blank">Open
+                                Government Licence v3.0</a>, except where otherwise stated
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </footer>
+
+</div>
+
+
+
+
+
+
+<div class="dialog js-dialog" id="dialog" aria-hidden="true"
+     data-ga="visible" data-ga-category="Timeout" data-ga-action="Timeout window visible">
+
+    <div class="dialog__overlay" tabindex="-1"></div>
+
+    <div class="dialog__body" role="dialog" aria-labelledby="dialog-title">
+        <div role="document">
+
+            <div class="mars u-mb-s">2017 Census Test</div>
+            <h1 class="saturn dialog__title" id="dialog-title" tabindex="0">Your session is about to expire</h1>
+
+            <div class="time js-timeout">
+
+                <svg class="time__visual" width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <circle cx="40" cy="40" r="40" stroke="#D3D3D3" stroke-width="6" fill="none"></circle>
+                    <circle class="time__circle js-timeout-circle" cx="40" cy="40" r="40" transform="rotate(-90 40 40)" fill="none" stroke="red" stroke-width="6" stroke-linecap="round"></circle>
+                </svg>
+
+                <div class="time__text venus js-timeout-time">0:00</div>
+
+            </div>
+
+            <form class="" action="/" method="post">
+                <button class="btn btn--primary btn--loader js-timeout-continue" type="button" data-loading-msg="Continuing&hellip;">Continue survey</button>
+                <br/>
+                <button class="btn btn--secondary btn--border js-timeout-save" type="submit">Save and sign out</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+	document.querySelector(".btn--primary").addEventListener(
+		"click",
+		function (event) {
+			event.preventDefault();
+			window.location.href = "../thankyou.html"; // target of save and continue
+		},
+		false
+	);
+	// This example displays an address form, using the autocomplete feature
+	// of the Google Places API to help users fill in the information.
+
+	// This example requires the Places library. Include the libraries=places
+	// parameter when you first load the API. For example:
+	// <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+	var placeSearch, autocomplete;
+	var componentForm = {
+		street_number: "short_name",
+		route: "long_name",
+		administrative_area_level_1: "short_name",
+		postal_town: "long_name",
+		country: "long_name",
+		postal_code: "short_name"
+	};
+
+	function initAutocomplete() {
+		// Create the autocomplete object, restricting the search to geographical
+		// location types.
+		autocomplete = new google.maps.places
+			.Autocomplete(
+				/** @type {!HTMLInputElement} */ (document.getElementById("autocomplete")),
+				{types: ["geocode"]}
+			);
+
+		// When the user selects an address from the dropdown, populate the address
+		// fields in the form.
+		autocomplete.addListener("place_changed", fillInAddress);
+	}
+
+	function fillInAddress() {
+		// Get the place details from the autocomplete object.
+		var place = autocomplete.getPlace();
+
+		for (var component in componentForm) {
+			document.getElementById(component).value = "";
+			document.getElementById(component).disabled = false;
+		}
+
+		// Get each component of the address from the place details
+		// and fill the corresponding field on the form.
+		for (var i = 0; i < place.address_components.length; i++) {
+			var addressType = place.address_components[i].types[0];
+			if (componentForm[addressType]) {
+				var val = place.address_components[i][componentForm[addressType]];
+				document.getElementById(addressType).value = val;
+			}
+		}
+		if (document.querySelector(".guidance").classList.contains("is-expanded")) {
+		} else {
+			document.querySelector(".guidance__link").click();
+		}
+	}
+
+	document
+		.querySelector("#autocomplete")
+		.addEventListener("keypress", function (e) {
+			var key = e.which || e.keyCode;
+			if (key === 13) {
+				// 13 is enter
+				e.preventDefault();
+			}
+		});
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMLQamD0AiEJavr9U0FvElw7s25rjyZEM&libraries=places&callback=initAutocomplete"
+        async defer></script>
+
+
+<!--<![endif]-->    <!--[if gte IE 9]><!-->
+
+<script src="/s/js/bundle.min.js?q=c9b1d9ca24f114e6b67a88390664a082d7bd52b6"></script>
+
+<!--<![endif]-->
+</body>
+</html>
