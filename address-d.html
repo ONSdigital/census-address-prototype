@@ -37,6 +37,11 @@
             position : relative;
         }
 
+        .address-component {
+            z-index : 10;
+            position : relative;
+        }
+
         .pac-container {
             position : absolute;
             width : 19.6rem;
@@ -66,6 +71,20 @@
             border-top: 2px solid #4263c2;
             background : none;
         }
+
+        /**
+        * Item is focused
+        */
+        .pac-item.focused {
+            background-color : #4263c2;
+        }
+
+        .pac-item.focused .pac-matched {
+            color: #fff;
+        }
+        /**
+        * End item is focused
+        */
 
         .pac-item:hover,
         .pac-item:hover .pac-item-query,
@@ -208,15 +227,16 @@
                                                                     Enter your address or postcode
                                                                 </label>
 
-                                                                <div id="locationField">
+                                                                <div id="locationField" class="address-component">
                                                                     <input class="input input--text" id="addressAutocomplete" placeholder=""type="text" />
 
                                                                     <div class="pac-container-wrapper">
                                                                         <div class="pac-container pac-logo hide"></div>
                                                                     </div>
                                                                 </div>
-                                                                <div id="guidance" class="guidance guidance--basic-toggle js-details" data-hide-label="Enter your address manually" data-show-label="Enter your address manually">
-                                                                    <a class="guidance__link js-details-trigger js-details-label mars" aria-controls="guidance-permanent-or-family-home-answer-body" data-guidance-trigger="true" id="guidance-permanent-or-family-home-answer-trigger" aria-expanded="false" href="#guidance-permanent-or-family-home-answer" data-ga-label="permanent-or-family-home-answer" data-ga-category="Help" data-ga="click" data-ga-action="Guidance click">Enter your address manually</a>
+                                                                <a id="address-details-trigger" class="mars" aria-controls="guidance-permanent-or-family-home-answer-body" href="#guidance-permanent-or-family-home-answer">Enter your address manually</a>
+
+                                                                <div id="guidance" class="guidance guidance--basic-toggle js-details address-details" data-hide-label="Enter your address manually" data-show-label="Enter your address manually">
                                                                     <div class="guidance__main js-details-body" aria-hidden="true" id="guidance-permanent-or-family-home-answer-body">
                                                                         <div class="guidance__content mars">
 
@@ -232,7 +252,7 @@
                                                                                 <input class="input input--text" id="postal_town" ></input></br />
 
                                                                                 <label class="label venus">County (Optional)</label>
-                                                                                <input class="input input--text" id="administrative_area_level_1" ></input></br />
+                                                                                <input class="input input--text" id="county" ></input></br />
 
                                                                                 <label class="label venus">Post code</label>
                                                                                 <input class="input input--text" id="postal_code" ></input></br />
@@ -422,15 +442,23 @@
 
 			responseAdaptor: function (data) {
 				return data.results.map(function (item) {
+					var addressObj = item['DPA'] || {};
+
 					return {
-						primaryText: item['DPA']['ADDRESS'],
+						fullAddress: addressObj['ADDRESS'],
+                        houseNumber: addressObj['BUILDING_NUMBER'],
+                        streetAddress: addressObj['THOROUGHFARE_NAME'],
+						cityTown: addressObj['POST_TOWN'],
+                        county: '[empty]',
+                        postCode: addressObj['POSTCODE'],
+                        country: '[empty]',
                         secondaryText: ''
 					};
                 });
             }
 		};
 
-		return service
+		return service;
     }());
 
 	/**
@@ -445,16 +473,17 @@
 		responseAdaptor: ordnanceSurveyService.responseAdaptor
 	};
 
-    function AddressComponent ($container, $inputEl) {
+    function AddressComponent ($scope, $inputEl) {
 
     	var _this = this,
+			emitter = $({}),
+            $container = $scope.find('.pac-container');
 
 			/**
              * If user has not typed anything new
 			 */
 			isClean = true,
 
-            ignoreKeys = [37, 39],
             keyDownMethods = {
 				13: enterKey_handler,
                 38: arrowUpKey_handler,
@@ -479,7 +508,7 @@
 			$(data).each(function (key, item) {
                 var $item = $('<button class="pac-item">' +
                     '<span class="pac-item-query">' +
-                        '<span class="pac-matched">' + item.primaryText + '</span>' +
+                        '<span class="pac-matched">' + item.fullAddress + '</span>' +
                     '</span>' +
                     '<span>' + item.secondaryText + '</span>' +
 				'</button>');
@@ -488,13 +517,7 @@
 					e.preventDefault();
                 });
 
-				$item.on('mousedown', function (e) {
-					e.preventDefault();
-
-					isClean = true;
-					hide();
-					$inputEl.val(item.primaryText/*+ ', ' + item.secondaryText*/);
-				});
+				$item.on('mousedown', itemMouseDown_handler.bind(_this, item));
 
 				$container.append($item);
             });
@@ -502,36 +525,79 @@
 
         function hide () {
             setTimeout(function () {
-				$container.addClass('hide');
+            	if (!$container.hasClass('hide')) {
+					$container.addClass('hide');
+                }
             }, 0);
         }
 
 		function show () {
     		if (!isClean) {
-			    $container.removeClass('hide');
+				$container.removeClass('hide');
 			}
 		}
 
 		function switchFocusedItem (index) {
 
-    		console.log($container.find(".pac-item:nth-child(2)"));
+			var current = currentFocusedItemIndex,
+                $currentEl = $container.find(".pac-item:nth-child(" + current + ")"),
+			    next = index,
+                $nextEl = $container.find(".pac-item:nth-child(" + next + ")");
 
-			$container.find(".pac-item:nth-child(2)").addClass('focused');
+			$currentEl.removeClass('focused');
+			$nextEl.addClass('focused');
+
+			currentFocusedItemIndex = next;
+
+			$container.scrollTop($container.scrollTop() + $nextEl.position().top);
         }
 
-		function enterKey_handler (e) {
+        function setValue (val) {
+			isClean = true;
+			hide();
+			$inputEl.val(val);
+        }
 
+        /**
+         * Event handlers
+         */
+		function enterKey_handler (e) {
+			var data = _this.data[currentFocusedItemIndex - 1];
+
+			if (!isClean && currentFocusedItemIndex === 0) {
+				return;
+            }
+
+			setValue(data.fullAddress);
+			emitter.trigger('addressSelected', [data]);
         }
 
         function arrowUpKey_handler (e) {
-			currentFocusedItemIndex--;
-			switchFocusedItem();
+			e.preventDefault();
+
+    		if (currentFocusedItemIndex < 2) {
+    			return;
+            }
+
+			switchFocusedItem(currentFocusedItemIndex-1);
         }
 
 		function arrowDownKey_handler (e) {
-			currentFocusedItemIndex++;
-			switchFocusedItem();
+			e.preventDefault();
+
+			if (currentFocusedItemIndex === _this.data.length) {
+				return;
+			}
+
+			switchFocusedItem(currentFocusedItemIndex+1);
         }
+
+		function itemMouseDown_handler (item, e) {
+			e.preventDefault();
+
+			setValue(item.fullAddress);
+			emitter.trigger('addressSelected', [item]);
+		}
 
         /**
          * Subscribe to input field events
@@ -539,13 +605,11 @@
 		$inputEl.on('focus', show);
 		$inputEl.on('blur', hide);
 		$inputEl.on('keydown', function (e) {
-			console.log(e.keyCode);
-
 			var keyDownMethod = keyDownMethods[e.keyCode];
 
 			keyDownMethod && keyDownMethod(e);
 
-			if (ignoreKeys.filter(function (item) { return item === e.keyCode }).length) {
+			if (AddressComponent.isKeyPressClean(e)) {
 				return;
             }
 
@@ -559,11 +623,23 @@
 
 			this.data = dataArr || this.data;
 			render();
+			currentFocusedItemIndex = 0;
         };
+
+    	/**
+         * Event emitter
+         * Events: ['addressSelected']
+         */
+    	this.emitter = emitter;
 
     	this.hide = hide;
 		this.show = show;
     }
+
+	AddressComponent.cleanKeys = [37, 38, 39, 40, 13];
+	AddressComponent.isKeyPressClean = function (e) {
+		return !!this.cleanKeys.filter(function (item) { return item === e.keyCode }).length;
+	};
 
 	/**
      * Controller bindings
@@ -571,7 +647,15 @@
 	$(document).ready(function() {
 
 		var $addressEl = $('#addressAutocomplete'),
-            addressComponent = new AddressComponent($('.pac-container'), $addressEl),
+            addressComponent = new AddressComponent($('#locationField'), $addressEl),
+            fieldToDataMap = {
+				houseNumber: 'street_number',
+				streetAddress: 'route',
+				cityTown: 'postal_town',
+				county: 'county',
+				postCode: 'postal_code',
+				country: 'country'
+            },
             mockData = [{
 				"DPA" : {
 					"UPRN" : "43014115",
@@ -775,13 +859,46 @@
 					"MATCH" : 0.2,
 					"MATCH_DESCRIPTION" : "NO MATCH"
 				}
-			}];
+			}],
+			isOpen = false;
 
-		$addressEl.on('keyup', function () {
+		addressComponent.emitter.on('addressSelected', function (e, dataItem) {
+			var i;
 
-			addressComponent.update(addressService.responseAdaptor({ results: mockData }));
+			for (i in fieldToDataMap) {
+				$('#' + fieldToDataMap[i]).val(dataItem[i]);
+            }
 
-			return;
+			toggleDetails(null, true);
+		});
+
+		$('#address-details-trigger').on('click', toggleDetails);
+
+		function toggleDetails (e, toOpen) {
+			var $details = $('#guidance-permanent-or-family-home-answer-body');
+
+			/**
+             * If persistent state isn't specified, flip state
+			 */
+			if (toOpen === undefined) {
+				toOpen = !isOpen;
+            }
+
+			$details.parent()[toOpen ? 'addClass' : 'removeClass']('is-expanded');
+			$details.attr('aria-hidden', !toOpen);
+			$('#address-details-trigger').attr('aria-expanded', toOpen);
+
+			isOpen = toOpen;
+        }
+
+		$addressEl.on('keyup', function (e) {
+			if (AddressComponent.isKeyPressClean(e)) {
+				return;
+			}
+
+			/*addressComponent.update(addressService.responseAdaptor({ results: mockData }));
+
+			return;*/
 
 			// Example: 'Ordnance Survey, Adanac Park, Southampton'
 			addressService.findAddress($(this).val())
