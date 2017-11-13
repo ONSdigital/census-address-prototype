@@ -234,7 +234,7 @@
                                                                         <div class="pac-container pac-logo hide"></div>
                                                                     </div>
                                                                 </div>
-                                                                <a id="address-details-trigger" class="mars" aria-controls="guidance-permanent-or-family-home-answer-body" href="#guidance-permanent-or-family-home-answer">Enter your address manually</a>
+                                                                <a id="address-details-trigger" class="mars btn btn--link" aria-controls="guidance-permanent-or-family-home-answer-body" href="#guidance-permanent-or-family-home-answer">Enter your address manually</a>
 
                                                                 <div id="guidance" class="guidance guidance--basic-toggle js-details address-details" data-hide-label="Enter your address manually" data-show-label="Enter your address manually">
                                                                     <div class="guidance__main js-details-body" aria-hidden="true" id="guidance-permanent-or-family-home-answer-body">
@@ -414,7 +414,8 @@
 
 		var baseUrl = 'https://api.ordnancesurvey.co.uk',
             apiKey = '0aAsi6S7sjGqNW2zGy31cGhStSuJxp2P',
-			apiKeyPath = '?key=' + apiKey;
+			apiKeyPath = '?key=' + apiKey,
+            request;
 
 		var service = {
 			places: {
@@ -433,14 +434,29 @@
                      * Convert to promise
 					 */
 					return new Promise(function (resolve, reject) {
-						$.getJSON(url)
-                            .done(function (res) { resolve(res); })
-                            .fail(function (res) { reject(res); })
+
+						service.request.isInflight = true;
+
+						request = $.getJSON(url)
+                            .done(function (res) {
+                            	console.log(1);
+								service.request.isInflight = false;
+                            	resolve(res);
+                            })
+                            .fail(function (res) {
+								console.log(2);
+								service.request.isInflight = false;
+                            	reject(res);
+                            })
 					});
-				}.bind(this)
+				}
 			},
 
 			responseAdaptor: function (data) {
+				if (!data.results || !data.results.length) {
+					return;
+                }
+
 				return data.results.map(function (item) {
 					var addressObj = item['DPA'] || {};
 
@@ -449,12 +465,19 @@
                         houseNumber: addressObj['BUILDING_NUMBER'],
                         streetAddress: addressObj['THOROUGHFARE_NAME'],
 						cityTown: addressObj['POST_TOWN'],
-                        county: '[empty]',
+                        county: '',
                         postCode: addressObj['POSTCODE'],
-                        country: '[empty]',
+                        country: '',
                         secondaryText: ''
 					};
                 });
+            },
+
+            request: {
+				isInflight: false,
+                cancel: function () {
+					request.abort();
+                }
             }
 		};
 
@@ -470,7 +493,9 @@
          * @returns {Promise} Promise object with return data
 		 */
 		findAddress: ordnanceSurveyService.places.findAddress,
-		responseAdaptor: ordnanceSurveyService.responseAdaptor
+
+		responseAdaptor: ordnanceSurveyService.responseAdaptor,
+		request: ordnanceSurveyService.request
 	};
 
     function AddressComponent ($scope, $inputEl) {
@@ -647,6 +672,7 @@
 	$(document).ready(function() {
 
 		var $addressEl = $('#addressAutocomplete'),
+			$addressDetailsTrigger = $('#address-details-trigger'),
             addressComponent = new AddressComponent($('#locationField'), $addressEl),
             fieldToDataMap = {
 				houseNumber: 'street_number',
@@ -872,7 +898,7 @@
 			toggleDetails(null, true);
 		});
 
-		$('#address-details-trigger').on('click', toggleDetails);
+		$addressDetailsTrigger.on('click', toggleDetails);
 
 		function toggleDetails (e, toOpen) {
 			var $details = $('#guidance-permanent-or-family-home-answer-body');
@@ -886,13 +912,23 @@
 
 			$details.parent()[toOpen ? 'addClass' : 'removeClass']('is-expanded');
 			$details.attr('aria-hidden', !toOpen);
-			$('#address-details-trigger').attr('aria-expanded', toOpen);
+			$addressDetailsTrigger.attr('aria-expanded', toOpen);
 
 			isOpen = toOpen;
         }
 
 		$addressEl.on('keyup', function (e) {
+			var val = $(this).val();
+
 			if (AddressComponent.isKeyPressClean(e)) {
+				return;
+			}
+
+			if (addressService.request.isInflight) {
+				addressService.request.cancel();
+			}
+
+			if (val === '') {
 				return;
 			}
 
@@ -901,12 +937,14 @@
 			return;*/
 
 			// Example: 'Ordnance Survey, Adanac Park, Southampton'
-			addressService.findAddress($(this).val())
+			addressService.findAddress(val)
 				.then(function (res) {
-					addressComponent.update(addressService.responseAdaptor(res));
+					console.log(3);
 					console.log('and then', res);
+					addressComponent.update(addressService.responseAdaptor(res));
 				})
 				.catch(function (res) {
+					console.log(4);
 					console.log('and fail', res);
 				});
         });
