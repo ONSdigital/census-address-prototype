@@ -239,23 +239,26 @@
 
                                                                             <div id="address">
                                                                                 <p class="neptune">Your Address</p>
-                                                                                <label class="label venus">House name or number</label>
-                                                                                <input class="input input--text" id="street_number" ></input></br />
+                                                                                <label class="label venus" for="street_number">House name or number</label>
+                                                                                <input class="input input--text" id="street_number" /><br />
 
-                                                                                <label class="label venus">Street address</label>
-                                                                                <input class="input input--text" id="route" ></input></br />
+                                                                                <label class="label venus" for="organisation_name">Organisation name</label>
+                                                                                <input class="input input--text" id="organisation_name" /><br />
 
-                                                                                <label class="label venus">City or town</label>
-                                                                                <input class="input input--text" id="postal_town" ></input></br />
+                                                                                <label class="label venus" for="route">Street address</label>
+                                                                                <input class="input input--text" id="route" /><br />
 
-                                                                                <label class="label venus">County (Optional)</label>
-                                                                                <input class="input input--text" id="county" ></input></br />
+                                                                                <label class="label venus" for="postal_town">City or town</label>
+                                                                                <input class="input input--text" id="postal_town" /><br />
 
-                                                                                <label class="label venus">Post code</label>
-                                                                                <input class="input input--text" id="postal_code" ></input></br />
+                                                                                <label class="label venus" for="county">County (Optional)</label>
+                                                                                <input class="input input--text" id="county" /><br />
 
-                                                                                <label class="label venus">Country</label>
-                                                                                <input class="input input--text" id="country" ></input></br />
+                                                                                <label class="label venus" for="postal_code">Post code</label>
+                                                                                <input class="input input--text" id="postal_code" /><br />
+
+                                                                                <label class="label venus" for="country">Country</label>
+                                                                                <input class="input input--text" id="country" /><br />
                                                                             </div>
 
                                                                         </div>
@@ -459,8 +462,8 @@
 					return {
 						fullAddress: addressObj['ADDRESS'],
                         houseNumber: addressObj['BUILDING_NUMBER'] ||
-                            addressObj['BUILDING_NAME'] ||
-						    addressObj['ORGANISATION_NAME'],
+                            addressObj['BUILDING_NAME'],
+                        organisationName: addressObj['ORGANISATION_NAME'],
                         streetAddress: addressObj['THOROUGHFARE_NAME'],
 						cityTown: addressObj['POST_TOWN'],
                         county: '',
@@ -680,9 +683,12 @@
 		var $addressEl = $('#addressAutocomplete'),
 			$addressDetailsTrigger = $('#address-details-trigger'),
 			$addressStartAgainTrigger = $('#address-start-again-trigger'),
+		    $details = $('#guidance-permanent-or-family-home-answer-body'),
+
             addressComponent = new AddressComponent($('#locationField'), $addressEl),
             fieldToDataMap = {
 				houseNumber: 'street_number',
+                organisationName: 'organisation_name',
 				streetAddress: 'route',
 				cityTown: 'postal_town',
 				county: 'county',
@@ -905,6 +911,11 @@
                 }
             };
 
+		/**
+         * Make sure element is removed from DOM on load
+         */
+		$details.hide();
+
 		addressComponent.emitter.on('addressSelected', function (e, dataItem) {
 			var i;
 
@@ -925,7 +936,6 @@
 		});
 
 		function toggleDetails (e, toOpen) {
-			var $details = $('#guidance-permanent-or-family-home-answer-body');
 
 			/**
              * If persistent state isn't specified, flip state
@@ -939,6 +949,18 @@
 			$addressDetailsTrigger.attr('aria-expanded', toOpen);
 
 			isOpen = toOpen;
+
+			if (toOpen){
+				$details.show();
+            } else {
+
+				/**
+				 * Make sure fields are removed from DOM after animation
+				 */
+				setTimeout(function () {
+					$details.hide();
+				}, 300);
+            }
         }
 
         function resetFields (e) {
