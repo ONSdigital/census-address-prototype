@@ -924,8 +924,6 @@
 			toggleDetails(null, true);
 		});
 
-		$addressDetailsTrigger.on('click', toggleDetails);
-
 		function toggleDetails (e, toOpen) {
 			var $details = $('#guidance-permanent-or-family-home-answer-body');
 
@@ -943,6 +941,18 @@
 			isOpen = toOpen;
         }
 
+        function resetFields (e) {
+			e.preventDefault();
+
+			$addressEl.val('');
+
+			for (i in fieldToDataMap) {
+				$('#' + fieldToDataMap[i]).val('');
+			}
+
+			$addressEl.focus();
+        }
+
 		var callService = _.debounce(function (address) {
 
                 addressService.findAddress(address)
@@ -956,6 +966,8 @@
 
             }, keyEntryPace.get());
 
+		$addressStartAgainTrigger.on('click', resetFields);
+		$addressDetailsTrigger.on('click', toggleDetails);
 		$addressEl.on('keyup', function (e) {
 			e.preventDefault();
 
