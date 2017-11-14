@@ -209,10 +209,7 @@
 
                                     <div class="question question--repeatinganswer" id="household-relationships-question">
 
-                                        <h1 class="question__title saturn">
-
-                                            What is your address?
-                                        </h1>
+                                        <h1 class="question__title saturn">What is your address?</h1>
 
                                         <fieldset>
                                             <div class="question__answers">
@@ -234,6 +231,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <a id="address-details-trigger" class="mars btn btn--link" aria-controls="guidance-permanent-or-family-home-answer-body" href="#guidance-permanent-or-family-home-answer">Enter your address manually</a>
+                                                                <button id="address-start-again-trigger" class="mars btn btn--link hide" href="#guidance-permanent-or-family-home-answer">Start again</button>
 
                                                                 <div id="guidance" class="guidance guidance--basic-toggle js-details address-details" data-hide-label="Enter your address manually" data-show-label="Enter your address manually">
                                                                     <div class="guidance__main js-details-body" aria-hidden="true" id="guidance-permanent-or-family-home-answer-body">
@@ -577,7 +575,7 @@
 			$container.scrollTop($container.scrollTop() + $nextEl.position().top);
         }
 
-        function setValue (val) {
+        function addressChanged () {
 			isClean = true;
 			hide();
         }
@@ -592,7 +590,7 @@
 				return;
             }
 
-			setValue(data.fullAddress);
+			addressChanged();
 			emitter.trigger('addressSelected', [data]);
         }
 
@@ -619,7 +617,7 @@
 		function itemMouseDown_handler (item, e) {
 			e.preventDefault();
 
-			setValue(item.fullAddress);
+			addressChanged();
 			emitter.trigger('addressSelected', [item]);
 		}
 
@@ -634,6 +632,10 @@
 		$inputEl.on('focus', show);
 		$inputEl.on('blur', hide);
 		$inputEl.on('keydown', function (e) {
+			if (e.keyCode === 13) {
+				e.preventDefault();
+			}
+
 			var keyDownMethod = keyDownMethods[e.keyCode];
 
 			keyDownMethod && keyDownMethod(e);
@@ -677,6 +679,7 @@
 
 		var $addressEl = $('#addressAutocomplete'),
 			$addressDetailsTrigger = $('#address-details-trigger'),
+			$addressStartAgainTrigger = $('#address-start-again-trigger'),
             addressComponent = new AddressComponent($('#locationField'), $addressEl),
             fieldToDataMap = {
 				houseNumber: 'street_number',
@@ -912,6 +915,9 @@
 				$('#' + fieldToDataMap[i]).val(dataItem[i]);
             }
 
+			$addressDetailsTrigger.hide();
+			$addressStartAgainTrigger.show();
+
             /**
              * Open field list
              */
@@ -951,6 +957,8 @@
             }, keyEntryPace.get());
 
 		$addressEl.on('keyup', function (e) {
+			e.preventDefault();
+
 			var val = $(this).val();
 
 			if (AddressComponent.isKeyPressClean(e)) {
