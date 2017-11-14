@@ -54,7 +54,6 @@
             border: 2px solid #4263c2;
             border-top: 0;
             color: #34384b;
-            overflow-x: hidden;
             padding: 0;
         }
 
@@ -405,8 +404,9 @@
     </div>
 </div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
 <script>
 
@@ -439,12 +439,10 @@
 
 						request = $.getJSON(url)
                             .done(function (res) {
-                            	console.log(1);
 								service.request.isInflight = false;
                             	resolve(res);
                             })
                             .fail(function (res) {
-								console.log(2);
 								service.request.isInflight = false;
                             	reject(res);
                             })
@@ -462,7 +460,9 @@
 
 					return {
 						fullAddress: addressObj['ADDRESS'],
-                        houseNumber: addressObj['BUILDING_NUMBER'],
+                        houseNumber: addressObj['BUILDING_NUMBER'] ||
+                            addressObj['BUILDING_NAME'] ||
+						    addressObj['ORGANISATION_NAME'],
                         streetAddress: addressObj['THOROUGHFARE_NAME'],
 						cityTown: addressObj['POST_TOWN'],
                         county: '',
@@ -502,7 +502,7 @@
 
     	var _this = this,
 			emitter = $({}),
-            $container = $scope.find('.pac-container');
+            $container = $scope.find('.pac-container'),
 
 			/**
              * If user has not typed anything new
@@ -580,7 +580,6 @@
         function setValue (val) {
 			isClean = true;
 			hide();
-			$inputEl.val(val);
         }
 
         /**
@@ -624,6 +623,11 @@
 			emitter.trigger('addressSelected', [item]);
 		}
 
+		function resetSelection () {
+			currentFocusedItemIndex = 0;
+			$container.scrollTop(0);
+        }
+
         /**
          * Subscribe to input field events
          */
@@ -642,13 +646,13 @@
         });
 
     	this.update = function (dataArr) {
-    		if (!dataArr || !dataArr.length) {
+    		if (!dataArr || dataArr.length === undefined) {
     			return;
             }
 
 			this.data = dataArr || this.data;
 			render();
-			currentFocusedItemIndex = 0;
+			resetSelection();
         };
 
     	/**
@@ -886,15 +890,31 @@
 					"MATCH_DESCRIPTION" : "NO MATCH"
 				}
 			}],
-			isOpen = false;
+			isOpen = false,
+			keyEntryPace = {
+			    /*timeout: 3000,
+			    entries: [1000],
+			    record: function () {
+			    	console.log(this);
+                },*/
+                get: function () {
+			    	return 0;
+                }
+            };
 
 		addressComponent.emitter.on('addressSelected', function (e, dataItem) {
 			var i;
 
+			/**
+             * Populate manual entry fields
+             */
 			for (i in fieldToDataMap) {
 				$('#' + fieldToDataMap[i]).val(dataItem[i]);
             }
 
+            /**
+             * Open field list
+             */
 			toggleDetails(null, true);
 		});
 
@@ -917,6 +937,19 @@
 			isOpen = toOpen;
         }
 
+		var callService = _.debounce(function (address) {
+
+                addressService.findAddress(address)
+                    .then(function (res) {
+                        console.log('and then', res);
+                        addressComponent.update(addressService.responseAdaptor(res));
+                    })
+                    .catch(function (res) {
+                        console.log('and fail', res);
+                    });
+
+            }, keyEntryPace.get());
+
 		$addressEl.on('keyup', function (e) {
 			var val = $(this).val();
 
@@ -928,7 +961,14 @@
 				addressService.request.cancel();
 			}
 
-			if (val === '') {
+			if (val.length < 3) {
+
+				// keyEntryPace.record();
+
+				if (addressComponent.data.length) {
+					addressComponent.update([]);
+                }
+
 				return;
 			}
 
@@ -936,17 +976,7 @@
 
 			return;*/
 
-			// Example: 'Ordnance Survey, Adanac Park, Southampton'
-			addressService.findAddress(val)
-				.then(function (res) {
-					console.log(3);
-					console.log('and then', res);
-					addressComponent.update(addressService.responseAdaptor(res));
-				})
-				.catch(function (res) {
-					console.log(4);
-					console.log('and fail', res);
-				});
+			callService(val);
         });
 	});
 </script>
