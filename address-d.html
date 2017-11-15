@@ -45,7 +45,7 @@
         .pac-container {
             position : absolute;
             width : 19.6rem;
-            max-height: 287px;
+            max-height: 265px;
             margin-top : -1px;
             margin-left : -1px;
             overflow-x : hidden;
@@ -142,6 +142,12 @@
         /**
          * End reset guidence styles
          */
+
+        @media only screen and (max-width: 500px) {
+            .pac-container {
+                width : auto;
+            }
+        }
     </style>
 </head>
 
@@ -967,6 +973,9 @@
 		});
 
 		function toggleDetails (e, toOpen) {
+			if (e) {
+				e.preventDefault();
+            }
 
 			/**
              * If persistent state isn't specified, flip state
@@ -1052,25 +1061,34 @@
             return aNumber - bNumber;
         }
 
-		var callService = _.debounce(function (address) {
+		var callService = _.debounce(function (address, attachArr) {
 
-                addressService.findAddress(address)
+                var serviceCall = addressService.findAddress(address)
                     .then(function (res) {
                         console.log('and then', res);
-                        var unorderedList = addressService.responseAdaptor(res),
-                            postcodeRelatedAddresses = unorderedList.filter(function (item) {
-
-                            }),
-                            postcodeUnrelatedAddresses = [];
 
                         addressComponent.update(
                         	addressService.responseAdaptor(res)
-                                .sort(addressSortAscendingComparator)
-                        );
+                                .sort(addressSortAscendingComparator));
+
+
                     })
                     .catch(function (res) {
                         console.log('and fail', res);
                     });
+
+                /**
+                 * Can't return promise from debounce - call is async
+                 */
+			    $.each(attachArr, function (key, item) {
+			    	console.log(item);
+
+                    if (item && item.prop && item.method) {
+						serviceCall[item.prop](item.method);
+
+						console.log(item.prop, item.method);
+					}
+                });
 
             }, keyEntryPace.get());
 
@@ -1104,7 +1122,13 @@
 
 			return;*/
 
-			callService(val);
+			var shouldAttachScrollToAddressElBool = $('body').prop('scrollWidth') < 485;
+
+			callService(val, shouldAttachScrollToAddressElBool ? [{
+				prop: 'then',
+				method: function () {
+                    $(window).scrollTop($addressEl.parent().prev('.label').offset().top);
+                }}] : []);
         });
 	});
 </script>
