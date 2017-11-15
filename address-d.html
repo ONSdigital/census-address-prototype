@@ -420,7 +420,7 @@
     var ordnanceSurveyService = (function () {
 
 		var baseUrl = 'https://api.ordnancesurvey.co.uk',
-            apiKey = '0aAsi6S7sjGqNW2zGy31cGhStSuJxp2P',
+            apiKey = 'BEa78WwFBkxWgdL1f6AEWfeHpmhVBeGh', // '0aAsi6S7sjGqNW2zGy31cGhStSuJxp2P',
 			apiKeyPath = '?key=' + apiKey,
             queryParams = {},
             request,
@@ -1081,12 +1081,8 @@
                  * Can't return promise from debounce - call is async
                  */
 			    $.each(attachArr, function (key, item) {
-			    	console.log(item);
-
                     if (item && item.prop && item.method) {
 						serviceCall[item.prop](item.method);
-
-						console.log(item.prop, item.method);
 					}
                 });
 
