@@ -220,7 +220,7 @@
                                                             <div class="field field--select">
 
                                                                 <label class="label venus">
-                                                                    Enter your address or postcode
+                                                                    Search using your address or postcode
                                                                 </label>
 
                                                                 <div id="locationField" class="address-component">
@@ -416,7 +416,47 @@
 		var baseUrl = 'https://api.ordnancesurvey.co.uk',
             apiKey = '0aAsi6S7sjGqNW2zGy31cGhStSuJxp2P',
 			apiKeyPath = '?key=' + apiKey,
-            request;
+            queryParams = {},
+            request,
+			languages = {
+			    'CY': true,
+                'EN': true
+            };
+
+		function createRequest () {
+
+			var queryParamString = '',
+				param,
+
+				url = baseUrl +
+					service.places._path +
+					service.places._findAddressPath +
+					apiKeyPath;
+
+			for (param in queryParams) {
+				queryParamString += '&' + param + '=' + queryParams[param];
+			}
+
+			url += queryParamString;
+
+			/**
+			 * Convert to promise
+			 */
+			return new Promise(function (resolve, reject) {
+
+				service.request.isInflight = true;
+
+				request = $.getJSON(url)
+					.done(function (res) {
+						service.request.isInflight = false;
+						resolve(res);
+					})
+					.fail(function (res) {
+						service.request.isInflight = false;
+						reject(res);
+					})
+			});
+        }
 
 		var service = {
 			places: {
@@ -425,35 +465,15 @@
 
 				findAddress: function (addressStr) {
 
-					var url = baseUrl +
-						service.places._path +
-						service.places._findAddressPath +
-						apiKeyPath +
-						'&query=' + addressStr;
+					queryParams['query'] = addressStr;
 
-					/**
-                     * Convert to promise
-					 */
-					return new Promise(function (resolve, reject) {
-
-						service.request.isInflight = true;
-
-						request = $.getJSON(url)
-                            .done(function (res) {
-								service.request.isInflight = false;
-                            	resolve(res);
-                            })
-                            .fail(function (res) {
-								service.request.isInflight = false;
-                            	reject(res);
-                            })
-					});
+					return createRequest();
 				}
 			},
 
 			responseAdaptor: function (data) {
 				if (!data.results || !data.results.length) {
-					return;
+					return [];
                 }
 
 				return data.results.map(function (item) {
@@ -461,7 +481,8 @@
 
 					return {
 						fullAddress: addressObj['ADDRESS'],
-                        houseNumber: addressObj['BUILDING_NUMBER'] ||
+						houseNumber: addressObj['BUILDING_NUMBER'],
+						houseNameOrNumber: addressObj['BUILDING_NUMBER'] ||
                             addressObj['BUILDING_NAME'],
                         organisationName: addressObj['ORGANISATION_NAME'],
                         streetAddress: addressObj['THOROUGHFARE_NAME'],
@@ -472,6 +493,13 @@
                         secondaryText: ''
 					};
                 });
+            },
+
+            setLanguage: function (languageSymbol) {
+
+				if (languages[languageSymbol]) {
+					queryParams['lr'] = languageSymbol;
+                }
             },
 
             request: {
@@ -496,7 +524,8 @@
 		findAddress: ordnanceSurveyService.places.findAddress,
 
 		responseAdaptor: ordnanceSurveyService.responseAdaptor,
-		request: ordnanceSurveyService.request
+		request: ordnanceSurveyService.request,
+		setLanguage: ordnanceSurveyService.setLanguage
 	};
 
     function AddressComponent ($scope, $inputEl) {
@@ -687,7 +716,7 @@
 
             addressComponent = new AddressComponent($('#locationField'), $addressEl),
             fieldToDataMap = {
-				houseNumber: 'street_number',
+				houseNameOrNumber: 'street_number',
                 organisationName: 'organisation_name',
 				streetAddress: 'route',
 				cityTown: 'postal_town',
@@ -911,6 +940,8 @@
                 }
             };
 
+		addressService.setLanguage('EN');
+
 		/**
          * Make sure element is removed from DOM on load
          */
@@ -975,12 +1006,67 @@
 			$addressEl.focus();
         }
 
+        function addressSortAscendingComparator (a, b) {
+
+			var addressValSnapshot = $addressEl.val().replace(' ', ''),
+                aNumber,
+				bNumber,
+			    aPostCode = a.postCode.replace(' ', ''),
+				bPostCode = b.postCode.replace(' ', ''),
+                priorityIncrement = 100 /* To come from service wrapper */;
+
+			if (a.houseNameOrNumber) {
+				aNumber = a.houseNameOrNumber.split(', ')[0].replace(/([a-z A-Z])/g, '');
+            }
+
+            if (b.houseNameOrNumber) {
+				bNumber = b.houseNameOrNumber.split(', ')[0].replace(/([a-z A-Z])/g, '');
+            }
+
+			/**
+             * If not comparable guard
+             */
+			if (!aNumber || !bNumber) {
+				if (aNumber) {
+					return aNumber;
+                }
+
+				if (bNumber) {
+					return bNumber;
+				}
+
+				return false;
+            }
+
+            /**
+             * Make all address with postcode matches come first
+             */
+            if (aPostCode && aPostCode.match(addressValSnapshot)) {
+				aNumber -= priorityIncrement * 2;
+            }
+
+			if (bPostCode && bPostCode.match(addressValSnapshot)) {
+				bNumber -= priorityIncrement * 2;
+			}
+
+            return aNumber - bNumber;
+        }
+
 		var callService = _.debounce(function (address) {
 
                 addressService.findAddress(address)
                     .then(function (res) {
                         console.log('and then', res);
-                        addressComponent.update(addressService.responseAdaptor(res));
+                        var unorderedList = addressService.responseAdaptor(res),
+                            postcodeRelatedAddresses = unorderedList.filter(function (item) {
+
+                            }),
+                            postcodeUnrelatedAddresses = [];
+
+                        addressComponent.update(
+                        	addressService.responseAdaptor(res)
+                                .sort(addressSortAscendingComparator)
+                        );
                     })
                     .catch(function (res) {
                         console.log('and fail', res);
