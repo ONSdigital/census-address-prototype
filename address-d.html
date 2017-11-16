@@ -17,7 +17,7 @@
     <link rel="mask-icon" href="/s/favicons/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="theme-color" content="#ffffff">
     <!--[if lt IE 9]>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
     <!--[if gt IE 8]><!-->
     <script>document.documentElement.className = document.documentElement.className.replace('no-js','has-js')</script>
@@ -415,300 +415,12 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
+<script src="/s/js/services/OrdnanceSurveyService.js"></script>
+<script src="/s/js/services/AddressService.js"></script>
+
+<script src="/s/js/components/Typeahead.js"></script>
+
 <script>
-
-    var ordnanceSurveyService = (function () {
-
-		var baseUrl = 'https://api.ordnancesurvey.co.uk',
-            apiKey = 'BEa78WwFBkxWgdL1f6AEWfeHpmhVBeGh', // '0aAsi6S7sjGqNW2zGy31cGhStSuJxp2P',
-			apiKeyPath = '?key=' + apiKey,
-            queryParams = {},
-            request,
-			languages = {
-			    'CY': true,
-                'EN': true
-            };
-
-		function createRequest () {
-
-			var queryParamString = '',
-				param,
-
-				url = baseUrl +
-					service.places._path +
-					service.places._findAddressPath +
-					apiKeyPath;
-
-			for (param in queryParams) {
-				queryParamString += '&' + param + '=' + queryParams[param];
-			}
-
-			url += queryParamString;
-
-			/**
-			 * Convert to promise
-			 */
-			return new Promise(function (resolve, reject) {
-
-				service.request.isInflight = true;
-
-				request = $.getJSON(url)
-					.done(function (res) {
-						service.request.isInflight = false;
-						resolve(res);
-					})
-					.fail(function (res) {
-						service.request.isInflight = false;
-						reject(res);
-					})
-			});
-        }
-
-		var service = {
-			places: {
-				_path: '/places/v1',
-				_findAddressPath: '/addresses/find',
-
-				findAddress: function (addressStr) {
-
-					queryParams['query'] = addressStr;
-
-					return createRequest();
-				}
-			},
-
-			responseAdaptor: function (data) {
-				if (!data.results || !data.results.length) {
-					return [];
-                }
-
-				return data.results.map(function (item) {
-					var addressObj = item['DPA'] || {};
-
-					return {
-						fullAddress: addressObj['ADDRESS'],
-						houseNumber: addressObj['BUILDING_NUMBER'],
-						houseNameOrNumber: addressObj['BUILDING_NUMBER'] ||
-                            addressObj['BUILDING_NAME'],
-                        organisationName: addressObj['ORGANISATION_NAME'],
-                        streetAddress: addressObj['THOROUGHFARE_NAME'],
-						cityTown: addressObj['POST_TOWN'],
-                        county: '',
-                        postCode: addressObj['POSTCODE'],
-                        country: '',
-                        secondaryText: ''
-					};
-                });
-            },
-
-            setLanguage: function (languageSymbol) {
-
-				if (languages[languageSymbol]) {
-					queryParams['lr'] = languageSymbol;
-                }
-            },
-
-            request: {
-				isInflight: false,
-                cancel: function () {
-					request.abort();
-                }
-            }
-		};
-
-		return service;
-    }());
-
-	/**
-     * Address service facade for components
-	 */
-	var addressService = {
-
-		/**
-         * @returns {Promise} Promise object with return data
-		 */
-		findAddress: ordnanceSurveyService.places.findAddress,
-
-		responseAdaptor: ordnanceSurveyService.responseAdaptor,
-		request: ordnanceSurveyService.request,
-		setLanguage: ordnanceSurveyService.setLanguage
-	};
-
-    function AddressComponent ($scope, $inputEl) {
-
-    	var _this = this,
-			emitter = $({}),
-            $container = $scope.find('.pac-container'),
-
-			/**
-             * If user has not typed anything new
-			 */
-			isClean = true,
-
-            keyDownMethods = {
-				13: enterKey_handler,
-                38: arrowUpKey_handler,
-                40: arrowDownKey_handler
-			},
-
-            currentFocusedItemIndex = 0;
-
-		/**
-         * Initial rendered data
-         */
-    	this.data = [];
-
-    	function render () {
-
-    		var data = _this.data;
-
-			$container.html('');
-
-			!data.length ? hide() : show();
-
-			$(data).each(function (key, item) {
-                var $item = $('<button class="pac-item">' +
-                    '<span class="pac-item-query">' +
-                        '<span class="pac-matched">' + item.fullAddress + '</span>' +
-                    '</span>' +
-                    '<span>' + item.secondaryText + '</span>' +
-				'</button>');
-
-				$item.on('click', function (e) {
-					e.preventDefault();
-                });
-
-				$item.on('mousedown', itemMouseDown_handler.bind(_this, item));
-
-				$container.append($item);
-            });
-        }
-
-        function hide () {
-            setTimeout(function () {
-            	if (!$container.hasClass('hide')) {
-					$container.addClass('hide');
-                }
-            }, 0);
-        }
-
-		function show () {
-    		if (!isClean) {
-				$container.removeClass('hide');
-			}
-		}
-
-		function switchFocusedItem (index) {
-
-			var current = currentFocusedItemIndex,
-                $currentEl = $container.find(".pac-item:nth-child(" + current + ")"),
-			    next = index,
-                $nextEl = $container.find(".pac-item:nth-child(" + next + ")");
-
-			$currentEl.removeClass('focused');
-			$nextEl.addClass('focused');
-
-			currentFocusedItemIndex = next;
-
-			$container.scrollTop($container.scrollTop() + $nextEl.position().top);
-        }
-
-        function addressChanged () {
-			isClean = true;
-			hide();
-        }
-
-        /**
-         * Event handlers
-         */
-		function enterKey_handler (e) {
-			var data = _this.data[currentFocusedItemIndex - 1];
-
-			if (!isClean && currentFocusedItemIndex === 0) {
-				return;
-            }
-
-			addressChanged();
-			emitter.trigger('addressSelected', [data]);
-        }
-
-        function arrowUpKey_handler (e) {
-			e.preventDefault();
-
-    		if (currentFocusedItemIndex < 2) {
-    			return;
-            }
-
-			switchFocusedItem(currentFocusedItemIndex-1);
-        }
-
-		function arrowDownKey_handler (e) {
-			e.preventDefault();
-
-			if (currentFocusedItemIndex === _this.data.length) {
-				return;
-			}
-
-			switchFocusedItem(currentFocusedItemIndex+1);
-        }
-
-		function itemMouseDown_handler (item, e) {
-			e.preventDefault();
-
-			addressChanged();
-			emitter.trigger('addressSelected', [item]);
-		}
-
-		function resetSelection () {
-			currentFocusedItemIndex = 0;
-			$container.scrollTop(0);
-        }
-
-        /**
-         * Subscribe to input field events
-         */
-		$inputEl.on('focus', show);
-		$inputEl.on('blur', hide);
-		$inputEl.on('keydown', function (e) {
-			if (e.keyCode === 13) {
-				e.preventDefault();
-			}
-
-			var keyDownMethod = keyDownMethods[e.keyCode];
-
-			keyDownMethod && keyDownMethod(e);
-
-			if (AddressComponent.isKeyPressClean(e)) {
-				return;
-            }
-
-			isClean = false;
-        });
-
-    	this.update = function (dataArr) {
-    		if (!dataArr || dataArr.length === undefined) {
-    			return;
-            }
-
-			this.data = dataArr || this.data;
-			render();
-			resetSelection();
-        };
-
-    	/**
-         * Event emitter
-         * Events: ['addressSelected']
-         */
-    	this.emitter = emitter;
-
-    	this.hide = hide;
-		this.show = show;
-    }
-
-	AddressComponent.cleanKeys = [37, 38, 39, 40, 13];
-	AddressComponent.isKeyPressClean = function (e) {
-		return !!this.cleanKeys.filter(function (item) { return item === e.keyCode }).length;
-	};
 
 	/**
      * Controller bindings
@@ -720,7 +432,7 @@
 			$addressStartAgainTrigger = $('#address-start-again-trigger'),
 		    $details = $('#guidance-permanent-or-family-home-answer-body'),
 
-            addressComponent = new AddressComponent($('#locationField'), $addressEl),
+            addressComponent = new TypeaheadComponent($('#locationField'), $addressEl),
             fieldToDataMap = {
 				houseNameOrNumber: 'street_number',
                 organisationName: 'organisation_name',
@@ -1017,11 +729,11 @@
 
         function addressSortAscendingComparator (a, b) {
 
-			var addressValSnapshot = $addressEl.val().replace(' ', ''),
+			var addressValSnapshot = $addressEl.val().replace(' ', '').toUpperCase(),
                 aNumber,
 				bNumber,
-			    aPostCode = a.postCode.replace(' ', ''),
-				bPostCode = b.postCode.replace(' ', ''),
+			    aPostCode = a.postCode.replace(' ', '').toUpperCase(),
+				bPostCode = b.postCode.replace(' ', '').toUpperCase(),
                 priorityIncrement = 100 /* To come from service wrapper */;
 
 			if (a.houseNameOrNumber) {
@@ -1095,7 +807,7 @@
 
 			var val = $(this).val();
 
-			if (AddressComponent.isKeyPressClean(e)) {
+			if (TypeaheadComponent.isKeyPressClean(e)) {
 				return;
 			}
 
