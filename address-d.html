@@ -733,8 +733,12 @@
 
         function addressSortAscendingComparator (a, b) {
 
-			var aNumber,
-				bNumber;
+			var // addressValSnapshot = $addressEl.val().replace(' ', '').toUpperCase(),
+                aNumber,
+				bNumber,
+			    // aPostCode = a.postCode.replace(' ', '').toUpperCase(),
+				// bPostCode = b.postCode.replace(' ', '').toUpperCase(),
+                priorityIncrement = 100 /* To come from service wrapper */;
 
 			if (a.houseNameOrNumber) {
 				aNumber = a.houseNameOrNumber.split(', ')[0].replace(/([a-z A-Z])/g, '');
@@ -759,6 +763,19 @@
 				return false;
             }
 
+            /**
+             * Make all address with postcode matches come first
+             */
+            /*if (aPostCode && aPostCode.match(addressValSnapshot)) {
+				aNumber -= priorityIncrement * 2;
+            }
+
+			if (bPostCode && bPostCode.match(addressValSnapshot)) {
+				bNumber -= priorityIncrement * 2;
+			}*/
+
+			// console.log(addressValSnapshot, aNumber, bNumber, aPostCode, bPostCode);
+
             return aNumber - bNumber;
         }
 
@@ -773,14 +790,20 @@
                         addressComponent.update(
 							_.flatten(
                                 _.partition(results, function (item) {
-                                    return item.postCode.replace(' ', '').toUpperCase() === $addressEl.val()
-                                        .replace(' ', '').toUpperCase();
+                                    return item.postCode
+                                        .replace(' ', '')
+                                        .toUpperCase()
+                                        .match($addressEl.val()
+                                            .replace(' ', '')
+                                            .toUpperCase()
+                                        );
                                 })
                                 .map(function (resultSet) {
                                     return resultSet.sort(addressSortAscendingComparator)
                                 })
                             )
                         );
+
                     })
                     .catch(function (res) {
                         console.log('and fail', res);
