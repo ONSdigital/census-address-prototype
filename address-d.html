@@ -420,12 +420,16 @@
 
 <script src="/s/js/components/Typeahead.js"></script>
 
+<script src="/s/js/controllers/SearchAddressesPostcodeController.js"></script>
+
 <script>
 
 	/**
      * Controller bindings
 	 */
 	$(document).ready(function() {
+
+		new SearchAddressesPostcodeController($('#who-lives-here-relationship'));
 
 		var $addressEl = $('#addressAutocomplete'),
 			$addressDetailsTrigger = $('#address-details-trigger'),
@@ -729,12 +733,8 @@
 
         function addressSortAscendingComparator (a, b) {
 
-			var addressValSnapshot = $addressEl.val().replace(' ', '').toUpperCase(),
-                aNumber,
-				bNumber,
-			    aPostCode = a.postCode.replace(' ', '').toUpperCase(),
-				bPostCode = b.postCode.replace(' ', '').toUpperCase(),
-                priorityIncrement = 100 /* To come from service wrapper */;
+			var aNumber,
+				bNumber;
 
 			if (a.houseNameOrNumber) {
 				aNumber = a.houseNameOrNumber.split(', ')[0].replace(/([a-z A-Z])/g, '');
@@ -759,17 +759,6 @@
 				return false;
             }
 
-            /**
-             * Make all address with postcode matches come first
-             */
-            if (aPostCode && aPostCode.match(addressValSnapshot)) {
-				aNumber -= priorityIncrement * 2;
-            }
-
-			if (bPostCode && bPostCode.match(addressValSnapshot)) {
-				bNumber -= priorityIncrement * 2;
-			}
-
             return aNumber - bNumber;
         }
 
@@ -779,11 +768,19 @@
                     .then(function (res) {
                         console.log('and then', res);
 
+						var results = addressService.responseAdaptor(res);
+
                         addressComponent.update(
-                        	addressService.responseAdaptor(res)
-                                .sort(addressSortAscendingComparator));
-
-
+							_.flatten(
+                                _.partition(results, function (item) {
+                                    return item.postCode.replace(' ', '').toUpperCase() === $addressEl.val()
+                                        .replace(' ', '').toUpperCase();
+                                })
+                                .map(function (resultSet) {
+                                    return resultSet.sort(addressSortAscendingComparator)
+                                })
+                            )
+                        );
                     })
                     .catch(function (res) {
                         console.log('and fail', res);
