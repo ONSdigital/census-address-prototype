@@ -77,7 +77,7 @@ function TypeaheadComponent ($scope, $inputEl) {
 		$container.scrollTop($container.scrollTop() + $nextEl.position().top);
 	}
 
-	function addressChanged () {
+	function inputChanged () {
 		isClean = true;
 		hide();
 	}
@@ -92,8 +92,8 @@ function TypeaheadComponent ($scope, $inputEl) {
 			return;
 		}
 
-		addressChanged();
-		emitter.trigger('addressSelected', [data]);
+		inputChanged();
+		emitter.trigger('itemSelected', [data]);
 	}
 
 	function arrowUpKey_handler (e) {
@@ -119,8 +119,8 @@ function TypeaheadComponent ($scope, $inputEl) {
 	function itemMouseDown_handler (item, e) {
 		e.preventDefault();
 
-		addressChanged();
-		emitter.trigger('addressSelected', [item]);
+		inputChanged();
+		emitter.trigger('itemSelected', [item]);
 	}
 
 	function resetSelection () {
@@ -161,7 +161,7 @@ function TypeaheadComponent ($scope, $inputEl) {
 
 	/**
 	 * Event emitter
-	 * Events: ['addressSelected']
+	 * Events: ['itemSelected']
 	 */
 	this.emitter = emitter;
 
@@ -172,4 +172,19 @@ function TypeaheadComponent ($scope, $inputEl) {
 TypeaheadComponent.cleanKeys = [37, 38, 39, 40, 13];
 TypeaheadComponent.isKeyPressClean = function (e) {
 	return !!this.cleanKeys.filter(function (item) { return item === e.keyCode }).length;
+};
+
+/**
+ *
+ * opts example
+ * {
+ *   scopeElement: <HTML element>,
+ *   inputElement: <HTML element>
+ * }
+ */
+TypeaheadComponent.create = function (opts) {
+	var $scope = $(opts.scopeElement),
+		$inputEl = $(opts.inputElement);
+
+	return new TypeaheadComponent($scope, $inputEl);
 };
