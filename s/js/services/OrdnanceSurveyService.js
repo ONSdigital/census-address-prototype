@@ -4,7 +4,7 @@
 window.ordnanceSurveyService = (function () {
 
 	var baseUrl = 'https://api.ordnancesurvey.co.uk',
-		apiKey = 'BEa78WwFBkxWgdL1f6AEWfeHpmhVBeGh', // '0aAsi6S7sjGqNW2zGy31cGhStSuJxp2P',
+		apiKey = 'jE1Xo1q5fVB5otJV4JBpGTNf8OJQ9ml8',
 		apiKeyPath = '?key=' + apiKey,
 		queryParams = {},
 		request,
